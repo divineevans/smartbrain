@@ -28,23 +28,26 @@ const particlesOptions = {
     }
 
 
+const initialState = {
+    input:'',
+    imgUrl:'',
+    box:{},
+    route:'signin',
+    isSignedIn: false,
+    user:{
+        id:'',
+        name:'',
+        email:'',
+        entries:0,
+        joined:''
+    }
+}
+
 class App extends Component {
   constructor(){
     super();
-    this.state={
-        input:'',
-        imgUrl:'',
-        box:{},
-        route:'signin',
-        isSignedIn: false,
-        user:{
-            id:'',
-            name:'',
-            email:'',
-            entries:0,
-            joined:''
-        }
-    }
+    this.state= initialState;
+    
   }
 
   loadUser = (data) => {
@@ -63,13 +66,20 @@ class App extends Component {
     const image = document.getElementById('inputimage');
     const width = Number(image.width);
     const height = Number(image.height);
+      
     return{
+      imgWidth:width,
+      imgHeight:height,  
       leftCol: clariFaiFace.left_col * width,
       topRow: clariFaiFace.top_row * height,
       rightCol: width - (clariFaiFace.right_col * width),
       bottomRow: height - (clariFaiFace.bottom_row*height)
+     
     }
+    
   }
+  
+ 
 
   displayFaceBox = (box) =>{
     this.setState({box: box})
@@ -85,7 +95,7 @@ onButtonSubmit = () =>{
   app.models.predict(
     "a403429f2ddf4b49b307e318f00e528b", 
     this.state.input)
-    .then(response =>{
+    .then(response =>{ console.log(response)
       if (response){
         fetch('http://localhost:3000/image', {
           method:'put',
@@ -100,6 +110,7 @@ onButtonSubmit = () =>{
             entries:count
           }))
         })
+        .catch(console.log)
       }
        this.displayFaceBox(this.calculateFaceLocation(response))
     })
@@ -108,7 +119,7 @@ onButtonSubmit = () =>{
 
   onRouteChange=(route)=>{
     if (route === 'signout'){
-      this.setState({isSignedIn:false}) 
+      this.setState(initialState) 
     }else if (route === 'home'){
       this.setState({isSignedIn:true})
     }
